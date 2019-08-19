@@ -8,6 +8,7 @@ The Mandelbrot set is the set of complex numbers C that prevents the function ab
 # How to use this repository
 This program uses sfml to render a window to display the plots. You can download it here https://www.sfml-dev.org/index.php. You will then have to compile the code. A makefile will be up later. 
 
+Left click to zoom in on that area. Right click to zoom directly out. 
 # Future work
 Panning, mouse features, and other UI related fixes. Multi threading and SIMD optimizations are also intereting to look into.
 
