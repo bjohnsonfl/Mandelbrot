@@ -23,16 +23,17 @@
 #include <thread>
 #include "mandelbrot.hpp"
 
-
+#define window_width 1000
+#define window_Height 1000
 
 
 int main(int, char const**)
 {
     // Create the main window
-    sf::RenderWindow window(sf::VideoMode(600, 400), "SFML window");
+    sf::RenderWindow window(sf::VideoMode(window_width, window_Height), "SFML window");
     window.setFramerateLimit(30);
 
-    mandelbrot img (600, 400, 256, 2);
+    mandelbrot img (window_width, window_Height, 5000, 2);
 
     while (window.isOpen())
     {
@@ -53,10 +54,18 @@ int main(int, char const**)
             if(event.type == sf::Event::MouseButtonPressed && img.isFinished())
             {
                 sf::Vector2i mouse = sf::Mouse::getPosition(window);
-                img.threadWork(mouse.x, mouse.y);
+                if(event.mouseButton.button == sf::Mouse::Button::Left) img.zoomIn(mouse.x, mouse.y);
+                else if( event.mouseButton.button == sf::Mouse::Button::Right) img.zoomOut();
             
             }
-          
+            /*
+            if(event.type == sf::Event::MouseWheelScrolled && img.isFinished())
+            {
+                sf::Vector2i mouse = sf::Mouse::getPosition(window);
+                if(event.mouseWheel.delta > 0) img.zoomIn(mouse.x, mouse.y);
+                else img.zoomOut();
+            }
+          */
         }
         // Clear screen
         window.clear();

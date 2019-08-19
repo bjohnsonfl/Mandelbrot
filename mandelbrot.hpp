@@ -14,7 +14,7 @@
 #include <thread>
 #include <fstream>
 
-typedef long double LD;
+typedef  double LD;
 //typedef double LD;
 
 extern int pixels [400][600];
@@ -34,9 +34,9 @@ private:
     
     LD offsetX;
     LD offsetY;
-    
-    double zoom;
-    double zoomScalar;
+      
+    LD zoom;
+    LD zoomScalar;
     
     int max_iteration;
     
@@ -52,7 +52,8 @@ public:
     ~mandelbrot() {th.join();}
     mandelbrot(int width, int height, int max_iteration, int zoomScalar);
     
-    void threadWork(int x, int y);
+    void zoomIn(int x, int y);
+    void zoomOut();
     void loop();
     
     void calculatePixel (int x, int y);

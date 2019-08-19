@@ -45,12 +45,12 @@ mandelbrot::mandelbrot(int width, int height, int max_iteration, int zoomScalar)
     //loop();
 }
 
-void mandelbrot::threadWork(int x, int y){
+void mandelbrot::zoomIn(int x, int y){
     th.join();
     std::cout << x << " " << y << "\n";
     centerX = picToMand_x(x);
     centerY = picToMand_y(y);
-    zoomScalar = 1.11;
+    zoomScalar = 15;
     man_Wid /= zoomScalar;
     man_Height /= zoomScalar;
     offsetX = (centerX - man_Wid / 2);
@@ -61,10 +61,18 @@ void mandelbrot::threadWork(int x, int y){
     std::cout << "X: "<<centerX << " " <<man_Wid << " " << offsetX <<  "\n" ;
     std::cout << "Y: " << centerY << " " <<man_Height << " " << offsetY <<  "\n" ;
     th = std::thread(&mandelbrot::loop, this);
+}
+
+
+void mandelbrot::zoomOut(){
+    th.join();
+    man_Wid *= zoomScalar;
+    man_Height *= zoomScalar;
+    offsetX = (centerX - man_Wid / 2);
     
+    offsetY = centerY + man_Height / 2;
     
-    
-    
+    th = std::thread(&mandelbrot::loop, this);
 }
 
 void mandelbrot::loop(){
@@ -95,13 +103,13 @@ void mandelbrot::calculatePixel(int pix_X, int pix_Y){
     LD y0 = picToMand_y(double(pix_Y));
   // std::cout << pix_X << " " << x0 << " "<< pix_Y << " " << y0 << "\n" ;
     
-    double x = 0;
-    double y = 0;
-    double xtemp = 0;
-    double iter = 0;
-    double rr = 0;
-    double ii = 0;
-    double zz = 0;
+    LD x = 0;
+    LD y = 0;
+    LD xtemp = 0;
+    LD iter = 0;
+    LD rr = 0;
+    LD ii = 0;
+    LD zz = 0;
     
     while(((x*x + y*y) <= 4) && iter <= max_iteration ){
         xtemp = x*x - y*y + x0;
@@ -132,10 +140,16 @@ void mandelbrot::setColor(int x, int y, int iterations){
     if(iterations >= max_iteration) color = 0;
     else color = 1;
     
+    
+    
+    int red = iterations / 4;
+    int green = iterations / 2;
+    int blue = iterations;
+    
     //pixels[-y][x] = color;
     vertexPixels[pixelCount].position = sf::Vector2f(x, y);
     vertexPixels[pixelCount].color = color == 1 ?
-            sf::Color(0,0,iterations % 256,255) : sf::Color(0,0,0,255);
+            sf::Color(red,green,blue % 256,255) : sf::Color(0,0,0,255);
     if(color == 1){
        
         stream << "0 0 "<< iterations % 256 << " ";
