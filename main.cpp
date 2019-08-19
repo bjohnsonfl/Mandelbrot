@@ -32,7 +32,7 @@ int main(int, char const**)
     sf::RenderWindow window(sf::VideoMode(600, 400), "SFML window");
     window.setFramerateLimit(30);
 
-    mandelbrot img (600, 400, 256);
+    mandelbrot img (600, 400, 256, 2);
 
     while (window.isOpen())
     {
@@ -48,6 +48,13 @@ int main(int, char const**)
             // Escape pressed: exit
             if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape) {
                 window.close();
+            }
+            
+            if(event.type == sf::Event::MouseButtonPressed && img.isFinished())
+            {
+                sf::Vector2i mouse = sf::Mouse::getPosition(window);
+                img.threadWork(mouse.x, mouse.y);
+            
             }
           
         }

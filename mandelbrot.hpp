@@ -14,6 +14,9 @@
 #include <thread>
 #include <fstream>
 
+typedef long double LD;
+//typedef double LD;
+
 extern int pixels [400][600];
 extern sf::VertexArray vertexPixels;
 
@@ -23,8 +26,18 @@ private:
     int width;
     int height;
     
-    double centerX;
-    double centerY;
+    LD man_Wid;
+    LD man_Height;
+    
+    LD centerX;
+    LD centerY;
+    
+    LD offsetX;
+    LD offsetY;
+    
+    double zoom;
+    double zoomScalar;
+    
     int max_iteration;
     
     int pixelCount;
@@ -37,32 +50,37 @@ public:
     
     mandelbrot();
     ~mandelbrot() {th.join();}
-    mandelbrot(int width, int height, int max_iteration);
+    mandelbrot(int width, int height, int max_iteration, int zoomScalar);
     
-    
+    void threadWork(int x, int y);
     void loop();
     
     void calculatePixel (int x, int y);
     
     void setColor(int x, int y, int iterations);
     
-    double picToMand_x (double x);
-    double picToMand_y (double y);
+    LD picToMand_x (double x);
+    LD picToMand_y (double y);
     
     bool isFinished ();
     
 };
 
-inline double mandelbrot::picToMand_x(double x) {
+inline LD mandelbrot::picToMand_x(double x) {
+    
+    return (x * (man_Wid / width)) + offsetX;
+     //return (x * ((0.7 + 1.5) / width)) - 1.5;
    // return ((x * 3.5)/600) - 2.5;
    // return (x - (width/2)) /float(300);
     
-    return (x * ((0.7 + 1.5) / width)) - 1.5;
+   
     //return x * (1/120) +2.5;
 }
 
-inline double mandelbrot::picToMand_y (double y){
-    return -((2* y)/height) + 1;
+inline LD mandelbrot::picToMand_y (double y){
+    //we use a -y value because the window y axis and mandelbrot y axis are reversed
+    return (-y * (man_Height/ height)) + offsetY;
+    //return -((2* y)/height) + 1;
    // return (y * ((1 + 1) / height)) -1 ;
    // return ((y * 3.5)/400) - 2.5;
    // return (y - (height/2)) / float(300);

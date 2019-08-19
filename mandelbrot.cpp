@@ -15,24 +15,63 @@ sf::VertexArray vertexPixels = sf::VertexArray(sf::Points, 1);
 
 mandelbrot::mandelbrot(){};
 
-mandelbrot::mandelbrot(int width, int height, int max_iteration){
+mandelbrot::mandelbrot(int width, int height, int max_iteration, int zoomScalar){
     this -> width = width;
     this -> height = height;
     this -> max_iteration = max_iteration;
+    zoom = 1;
+    this -> zoomScalar = zoomScalar;
+    /*
+    man_Wid = 0.7 + 1.5;
+    man_Height = -1 - 1;
+    offsetX = 1.5;
+    offsetY = -1;
+    */
+    man_Wid = 5;
+    man_Height = 5;
+    offsetX =  -2.5;
+    offsetY =  2.5;
+    
+    centerX = 0;
+    centerY = 0;
+    
     pixelCount = 0;
     vertexPixels.resize(width * height);
     vertexPixels.setPrimitiveType(sf::Points);
     finished = false;
     stream.open("mandelBrot.ppm");
     th = std::thread(&mandelbrot::loop, this);
+    //threadWork(300, 200);
     //loop();
 }
 
+void mandelbrot::threadWork(int x, int y){
+    th.join();
+    std::cout << x << " " << y << "\n";
+    centerX = picToMand_x(x);
+    centerY = picToMand_y(y);
+    zoomScalar = 1.11;
+    man_Wid /= zoomScalar;
+    man_Height /= zoomScalar;
+    offsetX = (centerX - man_Wid / 2);
+  
+    offsetY = centerY + man_Height / 2;
+    
+    //std::cout << centerX << " " << centerY <<" " <<man_Wid << " "<<man_Height <<" " << offsetX << " " << offsetY << "\n" ;
+    std::cout << "X: "<<centerX << " " <<man_Wid << " " << offsetX <<  "\n" ;
+    std::cout << "Y: " << centerY << " " <<man_Height << " " << offsetY <<  "\n" ;
+    th = std::thread(&mandelbrot::loop, this);
+    
+    
+    
+    
+}
 
 void mandelbrot::loop(){
     
     stream << "P3\n" << width << " " << height<< "\n255\n";
-    
+    finished = false;
+    pixelCount = 0;
         for(int y = 0; y < height; y++){
             for(int x = 0; x < width; x++){
             //vertexPixels[pixelCount].position = sf::Vector2f(x, y);
@@ -52,9 +91,9 @@ void mandelbrot::loop(){
 
 void mandelbrot::calculatePixel(int pix_X, int pix_Y){
     //std::cout << pix_X << " " << pix_Y << ":: ";
-    double x0 = picToMand_x(double(pix_X));
-    double y0 = picToMand_y(double(pix_Y));
-   std::cout << pix_X << " " << x0 << " "<< pix_Y << " " << y0 << "\n" ;
+    LD x0 = picToMand_x(double(pix_X));
+    LD y0 = picToMand_y(double(pix_Y));
+  // std::cout << pix_X << " " << x0 << " "<< pix_Y << " " << y0 << "\n" ;
     
     double x = 0;
     double y = 0;
@@ -81,6 +120,8 @@ void mandelbrot::calculatePixel(int pix_X, int pix_Y){
     }
     if(iter >= max_iteration) std::cout << "here ";
      */
+    //if(iter >= max_iteration) std::cout << "here ";
+    
     setColor(pix_X, pix_Y, iter);
 }
 
@@ -91,12 +132,14 @@ void mandelbrot::setColor(int x, int y, int iterations){
     if(iterations >= max_iteration) color = 0;
     else color = 1;
     
-    pixels[y][x] = color;
+    //pixels[-y][x] = color;
     vertexPixels[pixelCount].position = sf::Vector2f(x, y);
     vertexPixels[pixelCount].color = color == 1 ?
             sf::Color(0,0,iterations % 256,255) : sf::Color(0,0,0,255);
     if(color == 1){
+       
         stream << "0 0 "<< iterations % 256 << " ";
+       
     }
     else{
          stream << "0 0 0 ";
