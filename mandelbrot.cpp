@@ -12,6 +12,7 @@
 
 int pixels[400][600];
 sf::VertexArray vertexPixels = sf::VertexArray(sf::Points, 1);
+panDir pan[4] = {{-1,0} , {0 ,1}, {1,0}, {0,-1}};
 
 mandelbrot::mandelbrot(){};
 
@@ -21,12 +22,21 @@ mandelbrot::mandelbrot(int width, int height, int max_iteration, int zoomScalar)
     this -> max_iteration = max_iteration;
     zoom = 1;
     this -> zoomScalar = zoomScalar;
+    
     /*
     man_Wid = 0.7 + 1.5;
-    man_Height = -1 - 1;
-    offsetX = 1.5;
-    offsetY = -1;
+    man_Height = 1 + 1;
+    offsetX = -1.5;
+    offsetY = 1;
+     */
+    /*
+    man_Wid = 2 + 2;
+    man_Height = 4;
+    offsetX =  -3;
+    offsetY =  2;
     */
+    
+    
     man_Wid = 5;
     man_Height = 5;
     offsetX =  -2.5;
@@ -50,7 +60,8 @@ void mandelbrot::zoomIn(int x, int y){
     std::cout << x << " " << y << "\n";
     centerX = picToMand_x(x);
     centerY = picToMand_y(y);
-    zoomScalar = 15;
+   // zoomScalar = 15;
+    zoom *= zoomScalar;
     man_Wid /= zoomScalar;
     man_Height /= zoomScalar;
     offsetX = (centerX - man_Wid / 2);
@@ -66,6 +77,7 @@ void mandelbrot::zoomIn(int x, int y){
 
 void mandelbrot::zoomOut(){
     th.join();
+    zoom /= zoomScalar;
     man_Wid *= zoomScalar;
     man_Height *= zoomScalar;
     offsetX = (centerX - man_Wid / 2);
@@ -73,6 +85,53 @@ void mandelbrot::zoomOut(){
     offsetY = centerY + man_Height / 2;
     
     th = std::thread(&mandelbrot::loop, this);
+}
+
+void mandelbrot::zoomToTop(){
+    th.join();
+    man_Wid = 5;
+    man_Height = 5;
+    offsetX =  -2.5;
+    offsetY =  2.5;
+    
+    centerX = 0;
+    centerY = 0;
+    zoom =1;
+    th = std::thread(&mandelbrot::loop, this);
+}
+
+
+void mandelbrot::panImg(pan_dir dir){
+    /*
+     Panning is the same thing as zoom except we are not chaning the scaling factor.
+     This function shifts the images center 50 pixels and then proceeds to sample from the plot.
+     This is different from generate plot data, translating the data, and then projecting to the window.
+     Rather than have a switch statement or ugly if statments, an enumeration of direction
+     is used to look up the direction to pan to in an array of structs.
+     The offsets will need to be recalcuated because they are relative to the plot center which will be shifted.
+     */
+    th.join();
+    int step = 100;  //In window pixels, not plot units
+    int xCenter = width / 2;
+    int yCenter = height / 2;
+
+    panDir cord = pan[dir];
+    
+    xCenter += cord.x * step;
+    yCenter += cord.y * step;
+    
+    
+    centerX = picToMand_x(xCenter);
+    centerY = picToMand_y(yCenter);
+    
+    offsetX = (centerX - man_Wid / 2);
+    offsetY = centerY + man_Height / 2;
+
+    std::cout << "X: "<<centerX << " " <<man_Wid << " " << offsetX <<  "\n" ;
+    std::cout << "Y: " << centerY << " " <<man_Height << " " << offsetY <<  "\n" ;
+    
+    th = std::thread(&mandelbrot::loop, this);
+    
 }
 
 void mandelbrot::loop(){

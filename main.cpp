@@ -33,7 +33,7 @@ int main(int, char const**)
     sf::RenderWindow window(sf::VideoMode(window_width, window_Height), "SFML window");
     window.setFramerateLimit(30);
 
-    mandelbrot img (window_width, window_Height, 5000, 2);
+    mandelbrot img (window_width, window_Height, 5000, 15);
 
     while (window.isOpen())
     {
@@ -51,12 +51,49 @@ int main(int, char const**)
                 window.close();
             }
             
+            
+            
+            
+            if (event.type == sf::Event::KeyPressed && img.isFinished()){
+                
+                switch (event.key.code) {
+                    case sf::Keyboard::Left:
+                         img.panImg(left);
+                        break;
+                        
+                    case sf::Keyboard::Up:
+                        img.panImg(up);
+                        break;
+                        
+                    case sf::Keyboard::Right:
+                        img.panImg(right);
+                        break;
+                        
+                    case sf::Keyboard::Down:
+                        img.panImg(down);
+                        break;
+                        
+                    case sf::Keyboard::T:
+                        img.zoomToTop();
+                        break;
+                   
+                    
+                    default:
+                        break;
+                }
+                
+            }
+            
+            
+            
+            
+            
             if(event.type == sf::Event::MouseButtonPressed && img.isFinished())
             {
                 sf::Vector2i mouse = sf::Mouse::getPosition(window);
                 if(event.mouseButton.button == sf::Mouse::Button::Left) img.zoomIn(mouse.x, mouse.y);
                 else if( event.mouseButton.button == sf::Mouse::Button::Right) img.zoomOut();
-            
+                else if (event.mouseButton.button == sf::Mouse::Button::Middle) img.zoomToTop();
             }
             /*
             if(event.type == sf::Event::MouseWheelScrolled && img.isFinished())

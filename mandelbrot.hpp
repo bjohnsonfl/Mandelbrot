@@ -20,6 +20,21 @@ typedef  double LD;
 extern int pixels [400][600];
 extern sf::VertexArray vertexPixels;
 
+struct panDir {
+    int x;
+    int y;
+};
+enum pan_dir{
+    left,
+    up,
+    right,
+    down
+};
+
+extern panDir pan[4];
+
+
+
 class mandelbrot {
     
 private:
@@ -54,6 +69,8 @@ public:
     
     void zoomIn(int x, int y);
     void zoomOut();
+    void zoomToTop();
+    void panImg(pan_dir dir);
     void loop();
     
     void calculatePixel (int x, int y);
