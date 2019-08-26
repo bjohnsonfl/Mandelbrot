@@ -1,5 +1,5 @@
 # Mandelbrot Set Explorer
-This C++ program explores the recursive function Zn+1 = Zn + C where Zn is the complex number a + bi.
+This C++ program explores the recursive function Zn+1 = (Zn)^2 + C where Zn is the complex number a + bi.
 
 This program uses the basic escape algorithm described here https://en.wikipedia.org/wiki/Mandelbrot_set#Computer_drawings
 
